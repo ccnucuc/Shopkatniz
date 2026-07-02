@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAFNIZ SHOP - Nitro • Netflix • YouTube • Spotify</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        :root { --primary: #5865F2; --success: #22c55e; --warning: #eab308; --danger: #ef4444; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Roboto',sans-serif; background:linear-gradient(135deg,#0f0f23,#1a1a2e); color:#e0e0e0; min-height:100vh; }
+        header { background:#111827; padding:1rem 0; border-bottom:3px solid var(--primary); position:sticky; top:0; z-index:100; }
+        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
+        nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; }
+        .logo { font-size:1.8rem; font-weight:700; color:var(--primary); }
+        .nav-links { display:flex; gap:20px; list-style:none; flex-wrap:wrap; }
+        .nav-links a { color:#e0e0e0; text-decoration:none; font-weight:500; }
+        .section { padding:40px 0; display:none; }
+        .section.active { display:block; }
+        .btn { padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:500; }
+        .btn-primary { background:var(--primary); color:white; }
+        .btn-success { background:var(--success); color:white; }
+        .btn-warning { background:var(--warning); color:black; }
+        .btn-danger { background:var(--danger); color:white; }
+        .products-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:25px; }
+        .product-card { background:#1f2937; border-radius:12px; overflow:hidden; transition:0.3s; }
+        .product-card:hover { transform:translateY(-10px); }
+        .product-img { height:160px; background:#374151; display:flex; align-items:center; justify-content:center; font-size:4rem; }
+        .product-info { padding:20px; }
+        .price { font-size:1.4rem; font-weight:700; color:var(--success); margin:10px 0; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; z-index:1000; }
+        .modal-content { background:#1f2937; padding:30px; border-radius:12px; width:90%; max-width:520px; }
+        table { width:100%; border-collapse:collapse; background:#1f2937; border-radius:8px; }
+        th, td { padding:12px; text-align:left; border-bottom:1px solid #374151; }
+        th { background:#111827; }
+        .card-pending { background:#1f2937; padding:20px; border-radius:12px; margin:15px 0; border-left:5px solid var(--warning); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">KAFNIZ SHOP</div>
+                <ul class="nav-links" id="nav-menu">
+                    <li><a href="#" onclick="showSection('home')">Cửa hàng</a></li>
+                    <li><a href="#" onclick="showSection('history')">Lịch sử</a></li>
+                    <li><a href="#" onclick="showSupport()">Hỗ trợ</a></li>
+                </ul>
+                <div>
+                    <span id="username-display">Chưa đăng nhập</span>
+                    <button class="btn btn-primary" id="login-btn" onclick="showLoginModal()">Đăng nhập</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HOME -->
+    <div id="home" class="section active">
+        <div class="container">
+            <h1 style="text-align:center;margin-bottom:40px;color:white;">Dịch vụ Premium Giá Rẻ</h1>
+            
+            <div class="products-grid">
+                <div class="product-card"><div class="product-img">🚀</div><div class="product-info"><h3>Discord Nitro</h3><p>2 tháng</p><div class="price">120.000 VNĐ</div><button class="btn btn-success" style="width:100%" onclick="buyProduct(1)">Mua ngay</button></div></div>
+                <div class="product-card"><div class="product-img">▶️</div><div class="product-info"><h3>YouTube Premium</h3><p>1 tháng</p><div class="price">30.000 VNĐ</div><button class="btn btn-success" style="width:100%" onclick="buyProduct(2)">Mua ngay</button></div></div>
+                <div class="product-card"><div class="product-img">📺</div><div class="product-info"><h3>Netflix Private</h3><p>Tài khoản riêng</p><div class="price">60.000 VNĐ</div><button class="btn btn-success" style="width:100%" onclick="buyProduct(3)">Mua ngay</button></div></div>
+                <div class="product-card"><div class="product-img">📺</div><div class="product-info"><h3>Netflix Extra</h3><p>Chia sẻ</p><div class="price">90.000 VNĐ</div><button class="btn btn-success" style="width:100%" onclick="buyProduct(4)">Mua ngay</button></div></div>
+                <div class="product-card"><div class="product-img">🎵</div><div class="product-info"><h3>Spotify Premium</h3><p>1 tháng</p><div class="price">35.000 VNĐ</div><button class="btn btn-success" style="width:100%" onclick="buyProduct(5)">Mua ngay</button></div></div>
+            </div>
+
+            <!-- NẠP THẺ -->
+            <div style="margin-top:50px;background:#1f2937;padding:30px;border-radius:12px;">
+                <h2 style="text-align:center;margin-bottom:20px;">Nạp tiền bằng thẻ Viettel</h2>
+                <input type="text" id="card-code" placeholder="Mã thẻ Viettel (13 số)" style="width:100%;padding:12px;margin:8px 0;background:#374151;border:none;border-radius:8px;color:white;">
+                <input type="text" id="card-serial" placeholder="Serial thẻ" style="width:100%;padding:12px;margin:8px 0;background:#374151;border:none;border-radius:8px;color:white;">
+                <select id="card-denomination" style="width:100%;padding:12px;margin:8px 0;background:#374151;border:none;border-radius:8px;color:white;">
+                    <option value="">Chọn mệnh giá</option>
+                    <option value="10000">10.000 VNĐ</option>
+                    <option value="20000">20.000 VNĐ</option>
+                    <option value="50000">50.000 VNĐ</option>
+                    <option value="100000">100.000 VNĐ</option>
+                    <option value="200000">200.000 VNĐ</option>
+                    <option value="500000">500.000 VNĐ</option>
+                </select>
+                <button class="btn btn-success" style="width:100%;margin-top:15px;" onclick="submitCardRecharge()">Gửi yêu cầu nạp thẻ</button>
+                <p style="text-align:center;margin-top:15px;">Số dư: <span id="balance-display" style="color:var(--success);font-weight:bold;">0 VNĐ</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="history" class="section">
+        <div class="container">
+            <h2>Lịch sử giao dịch của bạn</h2>
+            <table id="history-table">
+                <thead><tr><th>ID</th><th>Sản phẩm</th><th>Số tiền</th><th>Thời gian</th><th>Trạng thái</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin" class="section">
+        <div class="container">
+            <h2>🔧 ADMIN PANEL</h2>
+            <div style="margin:20px 0;">
+                <button class="btn btn-primary" onclick="switchAdminTab(2)">Nạp thẻ chờ duyệt</button>
+            </div>
+            <div id="admin-tab-2">
+                <h3>Yêu cầu nạp thẻ đang chờ</h3>
+                <div id="pending-cards"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Đăng nhập</h2>
+            <input type="text" id="login-username" placeholder="Tên đăng nhập" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
+            <input type="password" id="login-password" placeholder="Mật khẩu" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
+            <button class="btn btn-primary" style="width:100%;margin:15px 0;" onclick="login()">Đăng nhập</button>
+            <p style="text-align:center;margin-top:10px;">
+                Chưa có tài khoản? <button onclick="showRegisterModal()" style="background:none;border:none;color:#60a5fa;cursor:pointer;">Đăng ký ngay</button>
+            </p>
+            <button onclick="closeModal()" style="background:none;border:none;color:#ef4444;cursor:pointer;">Đóng</button>
+        </div>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <h2>Tạo tài khoản khách</h2>
+            <input type="text" id="reg-username" placeholder="Tên đăng nhập" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
+            <input type="password" id="reg-password" placeholder="Mật khẩu" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
+            <button class="btn btn-success" style="width:100%;margin:15px 0;" onclick="registerUser()">Tạo tài khoản</button>
+            <button onclick="closeModal()" style="background:none;border:none;color:#ef4444;cursor:pointer;">Đóng</button>
+        </div>
+    </div>
+
+    <!-- BUY MODAL -->
+    <div id="buy-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="buy-title"></h2>
+            <p id="buy-message" style="margin:20px 0;line-height:1.6;"></p>
+            <button class="btn btn-success" style="width:100%" onclick="confirmBuy()">Xác nhận & Liên hệ hỗ trợ</button>
+            <button onclick="closeModal()" style="margin-top:10px;width:100%;background:#374151;">Hủy</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('shop_users')) || {
+            "0001": { username: "giamdoctuat", password: "adminshop123", balance: 10000000, role: "admin", id: "0001" }
+        };
+        let transactions = JSON.parse(localStorage.getItem('shop_transactions')) || [];
+        let pendingRecharges = JSON.parse(localStorage.getItem('pending_recharges')) || [];
+
+        const products = {
+            1: { name: "Discord Nitro 2 tháng", price: 120000 },
+            2: { name: "YouTube Premium 1 tháng", price: 30000 },
+            3: { name: "Netflix Private", price: 60000 },
+            4: { name: "Netflix Extra", price: 90000 },
+            5: { name: "Spotify Premium 1 tháng", price: 35000 }
+        };
+
+        function saveData() {
+            localStorage.setItem('shop_users', JSON.stringify(users));
+            localStorage.setItem('shop_transactions', JSON.stringify(transactions));
+            localStorage.setItem('pending_recharges', JSON.stringify(pendingRecharges));
+        }
+
+        function generateTransactionID() { return Math.floor(100000000 + Math.random() * 900000000).toString(); }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            if (section === 'history' && currentUser) loadHistory();
+            if (section === 'admin' && currentUser?.role === 'admin') renderPendingCards();
+        }
+
+        function showLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
+        function showRegisterModal() { closeModal(); document.getElementById('register-modal').style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+        function registerUser() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            if (!username || !password) return alert("Vui lòng nhập đầy đủ thông tin!");
+
+            if (Object.values(users).some(u => u.username === username)) {
+                return alert("Tên đăng nhập đã tồn tại!");
+            }
+
+            const newId = "1" + Math.floor(10000000 + Math.random() * 90000000);
+            users[newId] = { username, password, balance: 0, role: "user", id: newId };
+            saveData();
+            alert(`Tạo tài khoản thành công!\nID của bạn: ${newId}\nHãy đăng nhập để sử dụng.`);
+            closeModal();
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            for (let id in users) {
+                if (users[id].username === username && users[id].password === password) {
+                    currentUser = {...users[id], id};
+                    document.getElementById('username-display').textContent = `${username} (ID: ${id})`;
+                    document.getElementById('balance-display').textContent = currentUser.balance.toLocaleString('vi-VN') + " VNĐ";
+                    document.getElementById('login-btn').textContent = "Đăng xuất";
+                    document.getElementById('login-btn').onclick = () => location.reload();
+                    
+                    if (currentUser.role === "admin") {
+                        document.getElementById('nav-menu').innerHTML += `<li><a href="#" onclick="showSection('admin')">🔧 Admin</a></li>`;
+                    }
+                    closeModal();
+                    return;
+                }
+            }
+            alert("Sai tài khoản hoặc mật khẩu!");
+        }
+
+        function buyProduct(id) {
+            if (!currentUser) return alert("Vui lòng đăng nhập trước!");
+            const p = products[id];
+            if (currentUser.balance < p.price) return alert("Số dư không đủ! Hãy nạp thêm tiền.");
+            
+            document.getElementById('buy-title').textContent = `Mua ${p.name}`;
+            document.getElementById('buy-message').innerHTML = `Giá: <b>${p.price.toLocaleString('vi-VN')} VNĐ</b><br><br>Vui lòng liên hệ Discord <b>zexiyz_</b> hoặc server <a href="https://discord.gg/kafniz" target="_blank">discord.gg/kafniz</a> sau khi mua.`;
+            document.getElementById('buy-modal').style.display = 'flex';
+            window.currentProductId = id;
+        }
+
+        function confirmBuy() {
+            const id = window.currentProductId;
+            const p = products[id];
+            currentUser.balance -= p.price;
+            users[currentUser.id].balance = currentUser.balance;
+            
+            const txId = generateTransactionID();
+            transactions.unshift({ id: txId, userId: currentUser.id, product: p.name, amount: p.price, time: new Date().toLocaleString('vi-VN'), status: "Chờ liên hệ" });
+            saveData();
+            document.getElementById('balance-display').textContent = currentUser.balance.toLocaleString('vi-VN') + " VNĐ";
+            closeModal();
+            alert(`Đơn hàng thành công!\nMã giao dịch: ${txId}`);
+        }
+
+        function submitCardRecharge() {
+            if (!currentUser) return alert("Vui lòng đăng nhập!");
+            const code = document.getElementById('card-code').value.trim();
+            const serial = document.getElementById('card-serial').value.trim();
+            const denom = parseInt(document.getElementById('card-denomination').value);
+            if (!code || !serial || !denom) return alert("Vui lòng nhập đầy đủ thông tin thẻ!");
+
+            pendingRecharges.push({
+                id: "R" + Math.floor(100000 + Math.random()*900000),
+                userId: currentUser.id,
+                username: currentUser.username,
+                code, serial, denomination: denom,
+                time: new Date().toLocaleString('vi-VN'),
+                status: "Chờ duyệt"
+            });
+            saveData();
+            alert("Yêu cầu nạp thẻ đã được gửi cho Admin!");
+            document.getElementById('card-code').value = '';
+            document.getElementById('card-serial').value = '';
+        }
+
+        function renderPendingCards() {
+            const container = document.getElementById('pending-cards');
+            container.innerHTML = '';
+            pendingRecharges.forEach((req, i) => {
+                const div = document.createElement('div');
+                div.className = 'card-pending';
+                div.innerHTML = `
+                    <p><strong>ID:</strong> ${req.id} | <strong>User:</strong> ${req.username} (${req.userId})</p>
+                    <p><strong>Mã:</strong> ${req.code} | <strong>Serial:</strong> ${req.serial}</p>
+                    <p><strong>Mệnh giá:</strong> ${req.denomination.toLocaleString('vi-VN')} VNĐ</p>
+                    <button class="btn btn-success" onclick="approveRecharge(${i})">✅ Xác nhận thanh toán</button>
+                    <button class="btn btn-danger" onclick="rejectRecharge(${i})">❌ Từ chối</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function approveRecharge(i) {
+            const req = pendingRecharges[i];
+            users[req.userId].balance += req.denomination;
+            transactions.unshift({
+                id: generateTransactionID(),
+                userId: req.userId,
+                product: `Nạp thẻ Viettel ${req.denomination.toLocaleString('vi-VN')} VNĐ`,
+                amount: req.denomination,
+                time: new Date().toLocaleString('vi-VN'),
+                status: "Hoàn thành"
+            });
+            alert(`Đã cộng tiền cho ${req.username}`);
+            pendingRecharges.splice(i, 1);
+            saveData();
+            renderPendingCards();
+        }
+
+        function rejectRecharge(i) {
+            if (confirm("Từ chối?")) {
+                pendingRecharges.splice(i, 1);
+                saveData();
+                renderPendingCards();
+            }
+        }
+
+        function loadHistory() {
+            const tbody = document.querySelector('#history-table tbody');
+            tbody.innerHTML = '';
+            transactions.filter(t => t.userId === currentUser.id).forEach(tx => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${tx.id}</td><td>${tx.product}</td><td>${tx.amount.toLocaleString('vi-VN')}</td><td>${tx.time}</td><td>${tx.status}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showSupport() {
+            alert("Hỗ trợ:\n\nDiscord: zexiyz_\nServer: https://discord.gg/kafniz");
+        }
+
+        window.onload = () => { saveData(); };
+    </script>
+</body>
+</html>

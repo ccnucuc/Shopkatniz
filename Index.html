@@ -91,7 +91,7 @@
     <!-- HISTORY -->
     <div id="history" class="section">
         <div class="container">
-            <h2>Lịch sử giao dịch của bạn</h2>
+            <h2>Lịch sử giao dịch</h2>
             <table id="history-table">
                 <thead><tr><th>ID</th><th>Sản phẩm</th><th>Số tiền</th><th>Thời gian</th><th>Trạng thái</th></tr></thead>
                 <tbody></tbody>
@@ -103,9 +103,6 @@
     <div id="admin" class="section">
         <div class="container">
             <h2>🔧 ADMIN PANEL</h2>
-            <div style="margin:20px 0;">
-                <button class="btn btn-primary" onclick="switchAdminTab(2)">Nạp thẻ chờ duyệt</button>
-            </div>
             <div id="admin-tab-2">
                 <h3>Yêu cầu nạp thẻ đang chờ</h3>
                 <div id="pending-cards"></div>
@@ -120,10 +117,7 @@
             <input type="text" id="login-username" placeholder="Tên đăng nhập" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
             <input type="password" id="login-password" placeholder="Mật khẩu" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
             <button class="btn btn-primary" style="width:100%;margin:15px 0;" onclick="login()">Đăng nhập</button>
-            <p style="text-align:center;margin-top:10px;">
-                Chưa có tài khoản? <button onclick="showRegisterModal()" style="background:none;border:none;color:#60a5fa;cursor:pointer;">Đăng ký ngay</button>
-            </p>
-            <button onclick="closeModal()" style="background:none;border:none;color:#ef4444;cursor:pointer;">Đóng</button>
+            <p style="text-align:center;">Chưa có tài khoản? <button onclick="showRegisterModal()" style="background:none;border:none;color:#60a5fa;cursor:pointer;">Đăng ký ngay</button></p>
         </div>
     </div>
 
@@ -134,7 +128,6 @@
             <input type="text" id="reg-username" placeholder="Tên đăng nhập" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
             <input type="password" id="reg-password" placeholder="Mật khẩu" style="width:100%;padding:12px;margin:10px 0;background:#374151;border:none;border-radius:8px;color:white;">
             <button class="btn btn-success" style="width:100%;margin:15px 0;" onclick="registerUser()">Tạo tài khoản</button>
-            <button onclick="closeModal()" style="background:none;border:none;color:#ef4444;cursor:pointer;">Đóng</button>
         </div>
     </div>
 
@@ -142,8 +135,8 @@
     <div id="buy-modal" class="modal">
         <div class="modal-content">
             <h2 id="buy-title"></h2>
-            <p id="buy-message" style="margin:20px 0;line-height:1.6;"></p>
-            <button class="btn btn-success" style="width:100%" onclick="confirmBuy()">Xác nhận & Liên hệ hỗ trợ</button>
+            <p id="buy-message" style="margin:20px 0; line-height:1.6;"></p>
+            <button class="btn btn-success" style="width:100%" onclick="confirmBuy()">Xác nhận mua</button>
             <button onclick="closeModal()" style="margin-top:10px;width:100%;background:#374151;">Hủy</button>
         </div>
     </div>
@@ -170,7 +163,9 @@
             localStorage.setItem('pending_recharges', JSON.stringify(pendingRecharges));
         }
 
-        function generateTransactionID() { return Math.floor(100000000 + Math.random() * 900000000).toString(); }
+        function generateTransactionID() {
+            return Math.floor(100000000 + Math.random() * 900000000).toString();
+        }
 
         function showSection(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -186,23 +181,18 @@
         function registerUser() {
             const username = document.getElementById('reg-username').value.trim();
             const password = document.getElementById('reg-password').value.trim();
-            if (!username || !password) return alert("Vui lòng nhập đầy đủ thông tin!");
-
-            if (Object.values(users).some(u => u.username === username)) {
-                return alert("Tên đăng nhập đã tồn tại!");
-            }
-
+            if (!username || !password) return alert("Vui lòng nhập đầy đủ!");
+            if (Object.values(users).some(u => u.username === username)) return alert("Tên đăng nhập đã tồn tại!");
             const newId = "1" + Math.floor(10000000 + Math.random() * 90000000);
             users[newId] = { username, password, balance: 0, role: "user", id: newId };
             saveData();
-            alert(`Tạo tài khoản thành công!\nID của bạn: ${newId}\nHãy đăng nhập để sử dụng.`);
+            alert(`Tạo tài khoản thành công!\nID: ${newId}`);
             closeModal();
         }
 
         function login() {
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value.trim();
-            
             for (let id in users) {
                 if (users[id].username === username && users[id].password === password) {
                     currentUser = {...users[id], id};
@@ -210,7 +200,6 @@
                     document.getElementById('balance-display').textContent = currentUser.balance.toLocaleString('vi-VN') + " VNĐ";
                     document.getElementById('login-btn').textContent = "Đăng xuất";
                     document.getElementById('login-btn').onclick = () => location.reload();
-                    
                     if (currentUser.role === "admin") {
                         document.getElementById('nav-menu').innerHTML += `<li><a href="#" onclick="showSection('admin')">🔧 Admin</a></li>`;
                     }
@@ -222,12 +211,11 @@
         }
 
         function buyProduct(id) {
-            if (!currentUser) return alert("Vui lòng đăng nhập trước!");
+            if (!currentUser) return alert("Vui lòng đăng nhập!");
             const p = products[id];
-            if (currentUser.balance < p.price) return alert("Số dư không đủ! Hãy nạp thêm tiền.");
-            
+            if (currentUser.balance < p.price) return alert("Số dư không đủ!");
             document.getElementById('buy-title').textContent = `Mua ${p.name}`;
-            document.getElementById('buy-message').innerHTML = `Giá: <b>${p.price.toLocaleString('vi-VN')} VNĐ</b><br><br>Vui lòng liên hệ Discord <b>zexiyz_</b> hoặc server <a href="https://discord.gg/kafniz" target="_blank">discord.gg/kafniz</a> sau khi mua.`;
+            document.getElementById('buy-message').innerHTML = `Giá: <b>${p.price.toLocaleString('vi-VN')} VNĐ</b><br><br>Vui lòng liên hệ Discord <b>zexiyz_</b> hoặc server <a href="https://discord.gg/kafniz" target="_blank">discord.gg/kafniz</a>`;
             document.getElementById('buy-modal').style.display = 'flex';
             window.currentProductId = id;
         }
@@ -237,9 +225,8 @@
             const p = products[id];
             currentUser.balance -= p.price;
             users[currentUser.id].balance = currentUser.balance;
-            
             const txId = generateTransactionID();
-            transactions.unshift({ id: txId, userId: currentUser.id, product: p.name, amount: p.price, time: new Date().toLocaleString('vi-VN'), status: "Chờ liên hệ" });
+            transactions.unshift({id: txId, userId: currentUser.id, product: p.name, amount: p.price, time: new Date().toLocaleString('vi-VN'), status: "Chờ liên hệ"});
             saveData();
             document.getElementById('balance-display').textContent = currentUser.balance.toLocaleString('vi-VN') + " VNĐ";
             closeModal();
@@ -251,16 +238,8 @@
             const code = document.getElementById('card-code').value.trim();
             const serial = document.getElementById('card-serial').value.trim();
             const denom = parseInt(document.getElementById('card-denomination').value);
-            if (!code || !serial || !denom) return alert("Vui lòng nhập đầy đủ thông tin thẻ!");
-
-            pendingRecharges.push({
-                id: "R" + Math.floor(100000 + Math.random()*900000),
-                userId: currentUser.id,
-                username: currentUser.username,
-                code, serial, denomination: denom,
-                time: new Date().toLocaleString('vi-VN'),
-                status: "Chờ duyệt"
-            });
+            if (!code || !serial || !denom) return alert("Vui lòng nhập đầy đủ thông tin!");
+            pendingRecharges.push({id: "R" + Math.floor(100000 + Math.random()*900000), userId: currentUser.id, username: currentUser.username, code, serial, denomination: denom, time: new Date().toLocaleString('vi-VN')});
             saveData();
             alert("Yêu cầu nạp thẻ đã được gửi cho Admin!");
             document.getElementById('card-code').value = '';
@@ -274,10 +253,10 @@
                 const div = document.createElement('div');
                 div.className = 'card-pending';
                 div.innerHTML = `
-                    <p><strong>ID:</strong> ${req.id} | <strong>User:</strong> ${req.username} (${req.userId})</p>
-                    <p><strong>Mã:</strong> ${req.code} | <strong>Serial:</strong> ${req.serial}</p>
-                    <p><strong>Mệnh giá:</strong> ${req.denomination.toLocaleString('vi-VN')} VNĐ</p>
-                    <button class="btn btn-success" onclick="approveRecharge(${i})">✅ Xác nhận thanh toán</button>
+                    <p><strong>ID:</strong> ${req.id} | <strong>User:</strong> ${req.username}</p>
+                    <p>Mã: ${req.code} | Serial: ${req.serial}</p>
+                    <p>Mệnh giá: ${req.denomination.toLocaleString('vi-VN')} VNĐ</p>
+                    <button class="btn btn-success" onclick="approveRecharge(${i})">✅ Xác nhận</button>
                     <button class="btn btn-danger" onclick="rejectRecharge(${i})">❌ Từ chối</button>
                 `;
                 container.appendChild(div);
@@ -287,22 +266,15 @@
         function approveRecharge(i) {
             const req = pendingRecharges[i];
             users[req.userId].balance += req.denomination;
-            transactions.unshift({
-                id: generateTransactionID(),
-                userId: req.userId,
-                product: `Nạp thẻ Viettel ${req.denomination.toLocaleString('vi-VN')} VNĐ`,
-                amount: req.denomination,
-                time: new Date().toLocaleString('vi-VN'),
-                status: "Hoàn thành"
-            });
-            alert(`Đã cộng tiền cho ${req.username}`);
+            transactions.unshift({id: generateTransactionID(), userId: req.userId, product: "Nạp thẻ Viettel", amount: req.denomination, time: new Date().toLocaleString('vi-VN'), status: "Hoàn thành"});
+            alert("Đã duyệt và cộng tiền!");
             pendingRecharges.splice(i, 1);
             saveData();
             renderPendingCards();
         }
 
         function rejectRecharge(i) {
-            if (confirm("Từ chối?")) {
+            if (confirm("Từ chối yêu cầu?")) {
                 pendingRecharges.splice(i, 1);
                 saveData();
                 renderPendingCards();
